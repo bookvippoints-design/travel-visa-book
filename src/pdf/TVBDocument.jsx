@@ -1,3 +1,4 @@
+// DEPLOY v5 - NO COVER PAGE
 import { Document } from '@react-pdf/renderer'
 import { SummaryPage } from './pages/SummaryPage'
 import { PassengerPage } from './pages/PassengerPage'
@@ -40,7 +41,7 @@ export function TVBDocument({ data, company }) {
       title={trip.title || 'Travel Visa Book'}
       author={company?.commercial_name || 'Travel Visa Book'}
       subject={`Itinerario — ${data.passengers?.[0]?.name || ''}`}
-      creator="Travel Visa Book"
+      creator="Travel Visa Book v5"
     >
       <SummaryPage   data={data} company={company} meta={summaryMeta} />
       <PassengerPage data={data} company={company} meta={passMeta} />
