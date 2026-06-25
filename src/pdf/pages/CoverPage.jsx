@@ -12,11 +12,6 @@ export function CoverPage({ data, company }) {
 
   return (
     <Page size="A4" style={{ fontFamily: 'Helvetica', backgroundColor: NAVY }}>
-      {/* Background image */}
-      <Image
-        src={coverImage}
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.18 }}
-      />
 
       {/* Top bar */}
       <View style={{ backgroundColor: 'rgba(0,0,0,0.4)', paddingHorizontal: 40, paddingVertical: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
