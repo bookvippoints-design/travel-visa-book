@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import {
   LayoutDashboard, FileText, Plus, Settings, CreditCard,
-  LogOut, Plane, Users, BarChart2, Building2
+  LogOut, Plane, Users, BarChart2, Building2, X
 } from 'lucide-react'
 
 const companyLinks = [
@@ -20,7 +20,7 @@ const adminLinks = [
   { to: '/admin/activity', icon: BarChart2, label: 'Actividad' },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ onClose }) {
   const { profile, role, signOut } = useAuth()
   const navigate = useNavigate()
   const links = role === 'super_admin' ? adminLinks : companyLinks
@@ -28,6 +28,10 @@ export default function Sidebar() {
   async function handleLogout() {
     await signOut()
     navigate('/login')
+  }
+
+  function handleNav() {
+    if (onClose) onClose()
   }
 
   const navStyle = ({ isActive }) => ({
@@ -40,11 +44,11 @@ export default function Sidebar() {
   })
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-56 flex flex-col z-40"
+    <aside className="h-screen w-56 flex flex-col"
       style={{background: '#0f2a54', borderRight: '1px solid rgba(255,255,255,0.08)'}}>
 
       {/* Brand */}
-      <div className="p-5 border-b" style={{borderColor: 'rgba(255,255,255,0.08)'}}>
+      <div className="p-5 border-b flex items-center justify-between" style={{borderColor: 'rgba(255,255,255,0.08)'}}>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: '#B8860B'}}>
             <Plane className="w-4 h-4 text-white" />
@@ -54,6 +58,12 @@ export default function Sidebar() {
             <p className="text-blue-300 text-xs">Book</p>
           </div>
         </div>
+        {/* Close button — only on mobile */}
+        {onClose && (
+          <button onClick={onClose} className="lg:hidden p-1 rounded-lg text-gray-400 hover:text-white">
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       {/* Role badge */}
@@ -69,7 +79,8 @@ export default function Sidebar() {
         {links.map(({ to, icon: Icon, label }) => (
           <NavLink key={to} to={to}
             end={to === '/admin' || to === '/dashboard'}
-            style={navStyle}>
+            style={navStyle}
+            onClick={handleNav}>
             <Icon className="w-4 h-4 flex-shrink-0" />
             {label}
           </NavLink>
