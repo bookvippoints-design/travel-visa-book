@@ -13,7 +13,6 @@ export function AuthProvider({ children }) {
   async function loadProfile(authUser) {
     if (!authUser) { setProfile(null); setRole(null); setTrialExpired(false); return }
 
-    // Check super admin
     const { data: admin } = await supabase
       .from('admin_users').select('*')
       .eq('auth_user_id', authUser.id).single()
@@ -24,23 +23,32 @@ export function AuthProvider({ children }) {
       return
     }
 
-    // Check company
     const { data: company } = await supabase
       .from('companies')
       .select('*, plans(name, monthly_limit, features)')
       .eq('auth_user_id', authUser.id).single()
 
     if (company) {
-      // Check if trial expired
+      const now = new Date()
+
+      // Check trial expiration
       if (company.is_trial && company.trial_ends_at) {
-        const expired = new Date(company.trial_ends_at) < new Date()
-        if (expired) {
-          // Auto-suspend
-          await supabase.from('companies')
-            .update({ status: 'suspended' })
-            .eq('id', company.id)
+        if (new Date(company.trial_ends_at) < now) {
+          await supabase.from('companies').update({ status: 'suspended' }).eq('id', company.id)
           setTrialExpired(true)
-          setProfile(company)
+          setProfile({ ...company, _expiredReason: 'trial' })
+          setRole('company')
+          sessionStorage.setItem('tvb_role', 'company')
+          return
+        }
+      }
+
+      // Check annual plan expiration
+      if (!company.is_trial && company.plan_ends_at) {
+        if (new Date(company.plan_ends_at) < now) {
+          await supabase.from('companies').update({ status: 'suspended' }).eq('id', company.id)
+          setTrialExpired(true)
+          setProfile({ ...company, _expiredReason: 'annual' })
           setRole('company')
           sessionStorage.setItem('tvb_role', 'company')
           return
@@ -51,9 +59,7 @@ export function AuthProvider({ children }) {
       setRole('company')
       setTrialExpired(false)
       sessionStorage.setItem('tvb_role', 'company')
-      await supabase.from('companies')
-        .update({ last_login: new Date().toISOString() })
-        .eq('id', company.id)
+      await supabase.from('companies').update({ last_login: new Date().toISOString() }).eq('id', company.id)
     }
   }
 
