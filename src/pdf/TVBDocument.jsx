@@ -1,5 +1,4 @@
 import { Document } from '@react-pdf/renderer'
-import { CoverPage } from './pages/CoverPage'
 import { SummaryPage } from './pages/SummaryPage'
 import { PassengerPage } from './pages/PassengerPage'
 import { FlightsPage } from './pages/FlightsPage'
@@ -14,7 +13,7 @@ function calcPages(data) {
   const flightPages = Math.max(1, Math.ceil(flights / 2))
   const hotelPages = Math.max(1, Math.ceil(hotels / 3))
   const itinPages = Math.max(1, Math.ceil(days / 2))
-  return { flightPages, hotelPages, itinPages, total: 3 + flightPages + hotelPages + itinPages + 1 }
+  return { flightPages, hotelPages, itinPages, total: 2 + flightPages + hotelPages + itinPages + 1 }
 }
 
 export function TVBDocument({ data, company }) {
@@ -28,13 +27,13 @@ export function TVBDocument({ data, company }) {
     totalPages: total,
   }
 
-  let pg = 2
-  const summaryMeta  = { ...base, pageNumber: pg++ }
-  const passMeta     = { ...base, pageNumber: pg++ }
-  const flightMeta   = { ...base, pageNumber: pg };  pg += flightPages
-  const hotelMeta    = { ...base, pageNumber: pg };  pg += hotelPages
-  const itinMeta     = { ...base, pageNumber: pg };  pg += itinPages
-  const declMeta     = { ...base, pageNumber: pg }
+  let pg = 1
+  const summaryMeta = { ...base, pageNumber: pg++ }
+  const passMeta    = { ...base, pageNumber: pg++ }
+  const flightMeta  = { ...base, pageNumber: pg }; pg += flightPages
+  const hotelMeta   = { ...base, pageNumber: pg }; pg += hotelPages
+  const itinMeta    = { ...base, pageNumber: pg }; pg += itinPages
+  const declMeta    = { ...base, pageNumber: pg }
 
   return (
     <Document
@@ -43,7 +42,6 @@ export function TVBDocument({ data, company }) {
       subject={`Itinerario — ${data.passengers?.[0]?.name || ''}`}
       creator="Travel Visa Book"
     >
-      <CoverPage data={data} company={company} />
       <SummaryPage   data={data} company={company} meta={summaryMeta} />
       <PassengerPage data={data} company={company} meta={passMeta} />
       <FlightsPage   data={data} company={company} meta={flightMeta} />
