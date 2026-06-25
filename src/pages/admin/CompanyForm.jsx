@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { ArrowLeft, Save, Upload, Eye, EyeOff, Trash2, Power, RefreshCw, Gift, Crown } from 'lucide-react'
 
+
 export default function CompanyForm() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -476,5 +477,4 @@ export default function CompanyForm() {
   )
 }
 
-// Missing import
-import { Upload } from 'lucide-react'
+
