@@ -5,14 +5,14 @@ const AuthContext = createContext({})
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
-  const [profile, setProfile] = useState(null) // company or admin_user
-  const [role, setRole] = useState(null) // 'super_admin' | 'company'
+  const [profile, setProfile] = useState(null)
+  const [role, setRole] = useState(null)
   const [loading, setLoading] = useState(true)
 
   async function loadProfile(authUser) {
     if (!authUser) { setProfile(null); setRole(null); return }
 
-    // Check if super admin
+    // Check super admin first
     const { data: admin } = await supabase
       .from('admin_users')
       .select('*')
@@ -22,10 +22,11 @@ export function AuthProvider({ children }) {
     if (admin) {
       setProfile(admin)
       setRole('super_admin')
+      sessionStorage.setItem('tvb_role', 'super_admin')
       return
     }
 
-    // Check if company
+    // Check company
     const { data: company } = await supabase
       .from('companies')
       .select('*, plans(name, monthly_limit, features)')
@@ -35,8 +36,10 @@ export function AuthProvider({ children }) {
     if (company) {
       setProfile(company)
       setRole('company')
-      // Update last_login
-      await supabase.from('companies').update({ last_login: new Date().toISOString() }).eq('id', company.id)
+      sessionStorage.setItem('tvb_role', 'company')
+      await supabase.from('companies')
+        .update({ last_login: new Date().toISOString() })
+        .eq('id', company.id)
     }
   }
 
@@ -61,6 +64,7 @@ export function AuthProvider({ children }) {
 
   async function signOut() {
     await supabase.auth.signOut()
+    sessionStorage.removeItem('tvb_role')
     setUser(null); setProfile(null); setRole(null)
   }
 
