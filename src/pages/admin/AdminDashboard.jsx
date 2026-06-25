@@ -43,106 +43,102 @@ export default function AdminDashboard() {
   )
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Panel Super Admin</h1>
-          <p className="text-gray-500 text-sm mt-1">Vista general de la plataforma Travel Visa Book</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Panel Super Admin</h1>
+          <p className="text-gray-500 text-sm mt-1">Travel Visa Book · Vista general</p>
         </div>
         <button onClick={() => navigate('/admin/companies/new')}
-          className="flex items-center gap-2 px-5 py-3 rounded-xl text-white text-sm font-semibold shadow-lg"
+          className="flex items-center gap-2 px-5 py-3 rounded-xl text-white text-sm font-semibold shadow-lg justify-center"
           style={{background: '#1A3F7A'}}>
           <Plus className="w-4 h-4" /> Nueva Empresa
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      {/* Stats — 2 cols on mobile, 4 on desktop */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         {[
-          { label: 'Empresas registradas', value: stats.companies, icon: Building2, color: '#1A3F7A', bg: '#EFF6FF' },
-          { label: 'Empresas activas', value: stats.active, icon: Users, color: '#10b981', bg: '#F0FDF4' },
+          { label: 'Empresas', value: stats.companies, icon: Building2, color: '#1A3F7A', bg: '#EFF6FF' },
+          { label: 'Activas', value: stats.active, icon: Users, color: '#10b981', bg: '#F0FDF4' },
           { label: 'Docs este mes', value: stats.thisMonth, icon: TrendingUp, color: '#B8860B', bg: '#FFFBEB' },
           { label: 'Docs recientes', value: stats.docs, icon: FileText, color: '#6366f1', bg: '#EEF2FF' },
         ].map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <Icon className="w-8 h-8 p-1.5 rounded-lg mb-3" style={{background: bg, color}} />
-            <p className="text-3xl font-bold text-gray-900">{value}</p>
-            <p className="text-gray-500 text-sm mt-1">{label}</p>
+          <div key={label} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <Icon className="w-7 h-7 p-1.5 rounded-lg mb-2" style={{background: bg, color}} />
+            <p className="text-2xl font-bold text-gray-900">{value}</p>
+            <p className="text-gray-500 text-xs mt-0.5">{label}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
-        {/* Companies */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between p-5 border-b border-gray-100">
-            <h2 className="font-semibold text-gray-900">Empresas</h2>
-            <button onClick={() => navigate('/admin/companies')}
-              className="text-sm font-medium" style={{color: '#1A3F7A'}}>Ver todas →</button>
-          </div>
-          <div className="divide-y divide-gray-50">
-            {companies.slice(0, 6).map(co => (
-              <div key={co.id} className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold"
-                    style={{background: '#1A3F7A'}}>
-                    {(co.commercial_name || co.name || '?')[0].toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{co.commercial_name || co.name}</p>
-                    <p className="text-xs text-gray-400">Plan {co.plans?.name || '—'} · {co.monthly_limit === -1 ? 'Ilimitado' : co.monthly_limit + ' docs'}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs px-2 py-0.5 rounded-full" style={{
-                    background: co.status === 'active' ? '#F0FDF4' : '#FEF2F2',
-                    color: co.status === 'active' ? '#10b981' : '#ef4444'
-                  }}>
-                    {co.status === 'active' ? 'Activa' : 'Suspendida'}
-                  </span>
-                  <button onClick={() => navigate(`/admin/companies/${co.id}`)}
-                    className="p-1 rounded hover:bg-gray-100" style={{color:'#1A3F7A'}}>
-                    <Eye className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Companies */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-4">
+        <div className="flex items-center justify-between p-4 border-b border-gray-100">
+          <h2 className="font-semibold text-gray-900 text-sm">Empresas</h2>
+          <button onClick={() => navigate('/admin/companies')}
+            className="text-xs font-medium" style={{color: '#1A3F7A'}}>Ver todas →</button>
         </div>
-
-        {/* Recent documents across ALL companies */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between p-5 border-b border-gray-100">
-            <h2 className="font-semibold text-gray-900">Documentos recientes (todas las empresas)</h2>
-          </div>
-          <div className="divide-y divide-gray-50">
-            {recentDocs.length === 0 ? (
-              <div className="p-8 text-center text-gray-400 text-sm">No hay documentos aún</div>
-            ) : recentDocs.map(doc => (
-              <div key={doc.id} className="p-4 hover:bg-gray-50 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{doc.passenger_name || 'Sin nombre'}</p>
-                    <p className="text-xs text-gray-400">
-                      {doc.companies?.commercial_name || doc.companies?.name || '—'} · {doc.destination_title || 'Sin destino'}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full" style={{
-                      background: doc.status === 'finalized' ? '#F0FDF4' : '#F8FAFC',
-                      color: statusColor[doc.status]
-                    }}>
-                      {statusLabel[doc.status]}
-                    </span>
-                    <p className="text-xs text-gray-400">
-                      {new Date(doc.created_at).toLocaleDateString('es-EC')}
-                    </p>
-                  </div>
+        <div className="divide-y divide-gray-50">
+          {companies.slice(0, 5).map(co => (
+            <div key={co.id}
+              onClick={() => navigate(`/admin/companies/${co.id}`)}
+              className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors cursor-pointer">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                  style={{background: '#1A3F7A'}}>
+                  {(co.commercial_name || co.name || '?')[0].toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 truncate">{co.commercial_name || co.name}</p>
+                  <p className="text-xs text-gray-400 truncate">{co.plans?.name || '—'}</p>
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <span className="text-xs px-2 py-0.5 rounded-full" style={{
+                  background: co.status === 'active' ? '#F0FDF4' : '#FEF2F2',
+                  color: co.status === 'active' ? '#10b981' : '#ef4444'
+                }}>
+                  {co.status === 'active' ? 'Activa' : 'Suspendida'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent docs */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div className="p-4 border-b border-gray-100">
+          <h2 className="font-semibold text-gray-900 text-sm">Documentos recientes — todas las empresas</h2>
+        </div>
+        <div className="divide-y divide-gray-50">
+          {recentDocs.length === 0 ? (
+            <div className="p-8 text-center text-gray-400 text-sm">No hay documentos aún</div>
+          ) : recentDocs.map(doc => (
+            <div key={doc.id} className="p-4 hover:bg-gray-50 transition-colors">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 truncate">{doc.passenger_name || 'Sin nombre'}</p>
+                  <p className="text-xs text-gray-400 truncate">
+                    {doc.companies?.commercial_name || doc.companies?.name || '—'} · {doc.destination_title || 'Sin destino'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-xs px-2 py-0.5 rounded-full" style={{
+                    background: doc.status === 'finalized' ? '#F0FDF4' : '#F8FAFC',
+                    color: statusColor[doc.status]
+                  }}>
+                    {statusLabel[doc.status]}
+                  </span>
+                  <p className="text-xs text-gray-400 hidden sm:block">
+                    {new Date(doc.created_at).toLocaleDateString('es-EC')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
