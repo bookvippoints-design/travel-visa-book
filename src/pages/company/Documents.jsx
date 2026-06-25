@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabase'
+import { PDFButton } from '../../pdf/PDFButton'
 import { Plus, Search, Edit, Copy, Archive, FileText, Calendar } from 'lucide-react'
 
 export default function Documents() {
@@ -23,12 +24,15 @@ export default function Documents() {
   useEffect(() => { load() }, [profile])
 
   async function duplicate(doc) {
-    const { document_data, passenger_name, destination_title, countries, start_date, end_date } = doc
     const { error } = await supabase.from('travel_documents').insert([{
       company_id: profile.id,
-      passenger_name: passenger_name + ' (copia)',
-      destination_title, countries, start_date, end_date,
-      document_data, status: 'draft',
+      passenger_name: doc.passenger_name + ' (copia)',
+      destination_title: doc.destination_title,
+      countries: doc.countries,
+      start_date: doc.start_date,
+      end_date: doc.end_date,
+      document_data: doc.document_data,
+      status: 'draft',
       expedition_code: 'EXP-' + Date.now()
     }])
     if (!error) load()
@@ -43,7 +47,7 @@ export default function Documents() {
   const statusLabel = { draft: 'Borrador', finalized: 'Finalizado', archived: 'Archivado' }
 
   const filtered = docs.filter(d => {
-    const matchSearch = (d.passenger_name + d.destination_title).toLowerCase().includes(search.toLowerCase())
+    const matchSearch = ((d.passenger_name || '') + (d.destination_title || '')).toLowerCase().includes(search.toLowerCase())
     const matchStatus = filterStatus === 'all' || d.status === filterStatus
     return matchSearch && matchStatus
   })
@@ -98,7 +102,7 @@ export default function Documents() {
                     <p className="text-xs text-gray-400">{doc.destination_title || 'Sin destino'} · {doc.expedition_code || '—'}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   {doc.start_date && (
                     <div className="text-right hidden sm:block">
                       <p className="text-xs text-gray-400 flex items-center gap-1">
@@ -130,6 +134,11 @@ export default function Documents() {
                         <Archive className="w-4 h-4" />
                       </button>
                     )}
+                    <PDFButton
+                      data={doc.document_data || {}}
+                      company={profile}
+                      label="PDF"
+                    />
                   </div>
                 </div>
               </div>

@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabase'
-import { ArrowLeft, Save, CheckCircle, User, Globe, CalendarDays, Hotel, Plane, FileSignature } from 'lucide-react'
+import { ArrowLeft, Save, CheckCircle, User, Globe, CalendarDays, Hotel, Plane, FileSignature, FileDown } from 'lucide-react'
 import M01Passenger from './modules/M01_Passenger'
 import M02TripData from './modules/M02_TripData'
 import M05Itinerary from './modules/M05_Itinerary'
 import M06Hotels from './modules/M06_Hotels'
 import M07Flights from './modules/M07_Flights'
 import M18Declaration from './modules/M18_Declaration'
+import { PDFButton } from '../../pdf/PDFButton'
 
 const TABS = [
   { id: 'passenger', label: 'Pasajero', icon: User },
@@ -162,3 +163,5 @@ export default function Editor() {
     </div>
   )
 }
+
+// PDF export added via PDFButton in the header
