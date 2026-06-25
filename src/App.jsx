@@ -9,24 +9,20 @@ import Documents from './pages/company/Documents'
 import Editor from './pages/editor/Editor'
 import Brand from './pages/company/Brand'
 import Plan from './pages/company/Plan'
+
 import AdminDashboard from './pages/admin/AdminDashboard'
 import Companies from './pages/admin/Companies'
 import CompanyForm from './pages/admin/CompanyForm'
+import CompanyDocuments from './pages/admin/CompanyDocuments'
+import Plans from './pages/admin/Plans'
+import Activity from './pages/admin/Activity'
 
 function CompanyApp({ children }) {
-  return (
-    <ProtectedRoute>
-      <Layout>{children}</Layout>
-    </ProtectedRoute>
-  )
+  return <ProtectedRoute requiredRole="company"><Layout>{children}</Layout></ProtectedRoute>
 }
 
 function AdminApp({ children }) {
-  return (
-    <ProtectedRoute requiredRole="super_admin">
-      <Layout>{children}</Layout>
-    </ProtectedRoute>
-  )
+  return <ProtectedRoute requiredRole="super_admin"><Layout>{children}</Layout></ProtectedRoute>
 }
 
 export default function App() {
@@ -36,7 +32,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
 
-          {/* Company routes */}
+          {/* Company */}
           <Route path="/dashboard" element={<CompanyApp><Dashboard /></CompanyApp>} />
           <Route path="/documents" element={<CompanyApp><Documents /></CompanyApp>} />
           <Route path="/documents/new" element={<CompanyApp><Editor /></CompanyApp>} />
@@ -44,11 +40,14 @@ export default function App() {
           <Route path="/brand" element={<CompanyApp><Brand /></CompanyApp>} />
           <Route path="/plan" element={<CompanyApp><Plan /></CompanyApp>} />
 
-          {/* Admin routes */}
+          {/* Admin */}
           <Route path="/admin" element={<AdminApp><AdminDashboard /></AdminApp>} />
           <Route path="/admin/companies" element={<AdminApp><Companies /></AdminApp>} />
           <Route path="/admin/companies/new" element={<AdminApp><CompanyForm /></AdminApp>} />
           <Route path="/admin/companies/:id" element={<AdminApp><CompanyForm /></AdminApp>} />
+          <Route path="/admin/companies/:id/documents" element={<AdminApp><CompanyDocuments /></AdminApp>} />
+          <Route path="/admin/plans" element={<AdminApp><Plans /></AdminApp>} />
+          <Route path="/admin/activity" element={<AdminApp><Activity /></AdminApp>} />
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

@@ -15,12 +15,12 @@ export function ProtectedRoute({ children, requiredRole }) {
 
   if (!user) return <Navigate to="/login" replace />
 
-  // If super_admin tries to access company routes, send to admin panel
-  if (!requiredRole && role === 'super_admin') {
+  // Admin trying to access company routes
+  if (requiredRole === 'company' && role === 'super_admin') {
     return <Navigate to="/admin" replace />
   }
 
-  // If company tries to access admin routes
+  // Company trying to access admin routes
   if (requiredRole === 'super_admin' && role !== 'super_admin') {
     return <Navigate to="/dashboard" replace />
   }
