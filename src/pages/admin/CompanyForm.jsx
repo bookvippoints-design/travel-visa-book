@@ -417,3 +417,4 @@ export default function CompanyForm() {
     </div>
   )
 }
+// Trial support added via SQL function create_trial_company()

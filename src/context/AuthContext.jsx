@@ -7,21 +7,19 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [role, setRole] = useState(null)
+  const [trialExpired, setTrialExpired] = useState(false)
   const [loading, setLoading] = useState(true)
 
   async function loadProfile(authUser) {
-    if (!authUser) { setProfile(null); setRole(null); return }
+    if (!authUser) { setProfile(null); setRole(null); setTrialExpired(false); return }
 
-    // Check super admin first
+    // Check super admin
     const { data: admin } = await supabase
-      .from('admin_users')
-      .select('*')
-      .eq('auth_user_id', authUser.id)
-      .single()
+      .from('admin_users').select('*')
+      .eq('auth_user_id', authUser.id).single()
 
     if (admin) {
-      setProfile(admin)
-      setRole('super_admin')
+      setProfile(admin); setRole('super_admin')
       sessionStorage.setItem('tvb_role', 'super_admin')
       return
     }
@@ -30,12 +28,28 @@ export function AuthProvider({ children }) {
     const { data: company } = await supabase
       .from('companies')
       .select('*, plans(name, monthly_limit, features)')
-      .eq('auth_user_id', authUser.id)
-      .single()
+      .eq('auth_user_id', authUser.id).single()
 
     if (company) {
+      // Check if trial expired
+      if (company.is_trial && company.trial_ends_at) {
+        const expired = new Date(company.trial_ends_at) < new Date()
+        if (expired) {
+          // Auto-suspend
+          await supabase.from('companies')
+            .update({ status: 'suspended' })
+            .eq('id', company.id)
+          setTrialExpired(true)
+          setProfile(company)
+          setRole('company')
+          sessionStorage.setItem('tvb_role', 'company')
+          return
+        }
+      }
+
       setProfile(company)
       setRole('company')
+      setTrialExpired(false)
       sessionStorage.setItem('tvb_role', 'company')
       await supabase.from('companies')
         .update({ last_login: new Date().toISOString() })
@@ -65,11 +79,11 @@ export function AuthProvider({ children }) {
   async function signOut() {
     await supabase.auth.signOut()
     sessionStorage.removeItem('tvb_role')
-    setUser(null); setProfile(null); setRole(null)
+    setUser(null); setProfile(null); setRole(null); setTrialExpired(false)
   }
 
   return (
-    <AuthContext.Provider value={{ user, profile, role, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, profile, role, trialExpired, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   )

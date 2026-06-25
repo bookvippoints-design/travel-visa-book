@@ -1,8 +1,9 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import TrialExpired from '../../pages/auth/TrialExpired'
 
 export function ProtectedRoute({ children, requiredRole }) {
-  const { user, role, loading } = useAuth()
+  const { user, role, trialExpired, loading } = useAuth()
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center" style={{background: '#0f2a54'}}>
@@ -14,6 +15,9 @@ export function ProtectedRoute({ children, requiredRole }) {
   )
 
   if (!user) return <Navigate to="/login" replace />
+
+  // Trial expired — show expired screen instead of panel
+  if (trialExpired && role === 'company') return <TrialExpired />
 
   // Admin trying to access company routes
   if (requiredRole === 'company' && role === 'super_admin') {
