@@ -12,6 +12,14 @@ function Field({ label, value, flex = 1 }) {
 }
 
 export function PassengerPage({ data, company, meta }) {
+  const primary = company?.primary_color || '#1A3F7A'
+  const secondary = company?.secondary_color || '#B8860B'
+  const styles = makeStyles(primary, secondary)
+  const NAVY = primary
+  const GOLD = secondary
+  const LIGHT_BLUE = '#EFF6FF'
+  const WHITE = '#FFFFFF'
+  const BORDER = '#E2E8F0'
   const passengers = data.passengers || []
 
   return (

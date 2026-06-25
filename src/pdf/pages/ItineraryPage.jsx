@@ -1,6 +1,6 @@
 import { View, Text } from '@react-pdf/renderer'
 import { PageWrapper } from '../components/PageWrapper'
-import { styles, NAVY, GOLD, WHITE, GREEN, BORDER } from '../styles'
+import { makeStyles, GREEN } from '../styles'
 
 function DayCard({ day }) {
   return (
@@ -87,6 +87,14 @@ function DayCard({ day }) {
 }
 
 export function ItineraryPage({ data, company, meta }) {
+  const primary = company?.primary_color || '#1A3F7A'
+  const secondary = company?.secondary_color || '#B8860B'
+  const styles = makeStyles(primary, secondary)
+  const NAVY = primary
+  const GOLD = secondary
+  const LIGHT_BLUE = '#EFF6FF'
+  const WHITE = '#FFFFFF'
+  const BORDER = '#E2E8F0'
   const days = data.itinerary || []
 
   // 2 days per page (each day card can be tall with many activities)

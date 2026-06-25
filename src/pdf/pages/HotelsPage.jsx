@@ -97,6 +97,14 @@ function HotelCard({ hotel }) {
 }
 
 export function HotelsPage({ data, company, meta }) {
+  const primary = company?.primary_color || '#1A3F7A'
+  const secondary = company?.secondary_color || '#B8860B'
+  const styles = makeStyles(primary, secondary)
+  const NAVY = primary
+  const GOLD = secondary
+  const LIGHT_BLUE = '#EFF6FF'
+  const WHITE = '#FFFFFF'
+  const BORDER = '#E2E8F0'
   const hotels = data.hotels || []
   const totalNights = hotels.reduce((sum, h) => {
     if (h.checkin && h.checkout)

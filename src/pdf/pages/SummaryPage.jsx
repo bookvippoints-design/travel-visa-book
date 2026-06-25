@@ -1,6 +1,6 @@
 import { View, Text } from '@react-pdf/renderer'
 import { PageWrapper } from '../components/PageWrapper'
-import { styles, NAVY, GOLD, LIGHT_BLUE, GREEN } from '../styles'
+import { makeStyles, GREEN } from '../styles'
 
 function StatBox({ value, label, color = NAVY }) {
   return (
@@ -12,6 +12,14 @@ function StatBox({ value, label, color = NAVY }) {
 }
 
 export function SummaryPage({ data, company, meta }) {
+  const primary = company?.primary_color || '#1A3F7A'
+  const secondary = company?.secondary_color || '#B8860B'
+  const styles = makeStyles(primary, secondary)
+  const NAVY = primary
+  const GOLD = secondary
+  const LIGHT_BLUE = '#EFF6FF'
+  const WHITE = '#FFFFFF'
+  const BORDER = '#E2E8F0'
   const trip = data.trip || {}
   const nights = trip.startDate && trip.endDate
     ? Math.round((new Date(trip.endDate) - new Date(trip.startDate)) / 86400000) : 0

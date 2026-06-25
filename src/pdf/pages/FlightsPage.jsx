@@ -1,6 +1,6 @@
 import { View, Text, Page } from '@react-pdf/renderer'
 import { PageWrapper } from '../components/PageWrapper'
-import { styles, NAVY, GOLD, WHITE, LIGHT_BLUE, BORDER } from '../styles'
+import { makeStyles, WHITE } from '../styles'
 
 function BoardingPass({ flight, index }) {
   const typeLabel = { ida: 'IDA', regreso: 'REGRESO', 'conexión': 'CONEXIÓN', 'vuelo interno': 'INTERNO' }
@@ -94,6 +94,14 @@ function BoardingPass({ flight, index }) {
 }
 
 export function FlightsPage({ data, company, meta }) {
+  const primary = company?.primary_color || '#1A3F7A'
+  const secondary = company?.secondary_color || '#B8860B'
+  const styles = makeStyles(primary, secondary)
+  const NAVY = primary
+  const GOLD = secondary
+  const LIGHT_BLUE = '#EFF6FF'
+  const WHITE = '#FFFFFF'
+  const BORDER = '#E2E8F0'
   const flights = data.flights || []
 
   // Split flights into groups of 2 per page to avoid cuts
