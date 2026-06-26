@@ -158,14 +158,10 @@ export default function CompanyForm() {
       if (isNew) {
         payload.email = newEmail
         // Try to create auth user
-        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users`, {
+        const res = await fetch('/.netlify/functions/create-user', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-          },
-          body: JSON.stringify({ email: newEmail, password: newUserPassword, email_confirm: true })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: newEmail, password: newUserPassword })
         })
         const userData = await res.json()
         if (userData.id) payload.auth_user_id = userData.id
@@ -201,10 +197,10 @@ export default function CompanyForm() {
     if (!newPassword || newPassword.length < 6) { setMsg({ text: 'Mínimo 6 caracteres.', type: 'error' }); return }
     setLoading(true)
     try {
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users/${authUserId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY, 'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}` },
-        body: JSON.stringify({ password: newPassword })
+      const res = await fetch('/.netlify/functions/update-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: authUserId, password: newPassword })
       })
       const data = await res.json()
       if (data.id) { setMsg({ text: '✅ Contraseña actualizada.', type: 'success' }); setNewPassword('') }
