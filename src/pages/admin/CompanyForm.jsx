@@ -158,10 +158,15 @@ export default function CompanyForm() {
       if (isNew) {
         payload.email = newEmail
         // Try to create auth user
-        const res = await fetch('/.netlify/functions/create-user', {
+        // Create auth user with service role key
+        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: newEmail, password: newUserPassword })
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_SERVICE_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_SERVICE_KEY}`
+          },
+          body: JSON.stringify({ email: newEmail, password: newUserPassword, email_confirm: true })
         })
         const userData = await res.json()
         if (userData.id) payload.auth_user_id = userData.id
@@ -197,10 +202,14 @@ export default function CompanyForm() {
     if (!newPassword || newPassword.length < 6) { setMsg({ text: 'Mínimo 6 caracteres.', type: 'error' }); return }
     setLoading(true)
     try {
-      const res = await fetch('/.netlify/functions/update-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: authUserId, password: newPassword })
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/admin/users/${authUserId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_SERVICE_KEY}`
+        },
+        body: JSON.stringify({ password: newPassword })
       })
       const data = await res.json()
       if (data.id) { setMsg({ text: '✅ Contraseña actualizada.', type: 'success' }); setNewPassword('') }
